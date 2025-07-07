@@ -23,9 +23,19 @@ class _ModalPageState extends State<ModalPage> {
   Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers = {
     Factory(() => EagerGestureRecognizer())
   };
+  double pageProgress = 0;
+  bool showPageProgress = false;
   final urlController = TextEditingController(text: 'flutter.dev');
   String lastURL = 'https://flutter.dev';
   bool showClearButton = false;
+
+  @override
+  void initState() {
+    super.initState();
+    webViewController.setNavigationDelegate(
+      NavigationDelegate(onProgress: updateLoadingIndicator),
+    );
+  }
 
   @override
   void dispose() {
@@ -110,6 +120,9 @@ class _ModalPageState extends State<ModalPage> {
                                 onTapClear: () => urlController.clear(),
                                 onTapRefresh: () => webViewController.reload(),
                               ),
+                              PageLoadingIndicator(
+                                  showPageProgress: showPageProgress,
+                                  pageProgress: pageProgress),
                               Expanded(
                                 child: WebViewWidget(
                                     gestureRecognizers: gestureRecognizers,
@@ -144,6 +157,47 @@ class _ModalPageState extends State<ModalPage> {
     setState(() {
       showClearButton = false;
     });
+  }
+
+  Future<void> updateLoadingIndicator(int progress) async {
+    showPageProgress = true;
+    pageProgress = progress / 100;
+    setState(() {});
+    if (progress == 100) {
+      await Future.delayed(Duration(milliseconds: 500), () {
+        showPageProgress = false;
+        setState(() {});
+      });
+    }
+  }
+}
+
+class PageLoadingIndicator extends StatelessWidget {
+  const PageLoadingIndicator({
+    super.key,
+    required this.showPageProgress,
+    required this.pageProgress,
+  });
+
+  final bool showPageProgress;
+  final double pageProgress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+        visible: showPageProgress,
+        child: TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0.0, end: pageProgress),
+          duration: Duration(milliseconds: 200),
+          builder: (context, value, child) {
+            return LinearProgressIndicator(
+              value: value,
+              borderRadius: BorderRadius.circular(5),
+              color: Constants.buttonTextColor,
+              backgroundColor: Colors.white,
+            );
+          },
+        ));
   }
 }
 

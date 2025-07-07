@@ -180,7 +180,7 @@ class TopBar extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(16, 7, 16, 7),
       color: Constants.barsBackgroundColor,
       child: Row(
-        spacing: 15,
+        spacing: 10,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ModalButton(
@@ -201,6 +201,7 @@ class TopBar extends StatelessWidget {
               fillColor: Constants.textFormColor,
               contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
               hintText: 'Введіть URL',
+              hintStyle: TextStyle(color: Colors.grey[600]),
               enabledBorder: outlineInputBorder,
               focusedBorder: outlineInputBorder,
               suffixIconConstraints:
@@ -220,9 +221,12 @@ class TopBar extends StatelessWidget {
           )),
           InkWell(
             onTap: onTapRefresh,
-            child: Icon(
-              Icons.refresh,
-              color: buttonTextColor,
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Icon(
+                Icons.refresh,
+                color: buttonTextColor,
+              ),
             ),
           )
         ],
@@ -309,12 +313,15 @@ class _ModalButtonState extends State<ModalButton> {
             toClose ? Constants.modalSizeMin : Constants.modalSizeClosed);
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: Text(
-        buttonLabel,
-        style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Constants.buttonTextColor),
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Text(
+          buttonLabel,
+          style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Constants.buttonTextColor),
+        ),
       ),
     );
   }
